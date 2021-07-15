@@ -631,6 +631,9 @@ class PpoOptimizer(object):
         # Update the logits of the newest policy corresponding to the current obs & acs
         self.policy.update_features(obs, acs)
         # Get the negative log probs of the actions under the policy
+        if torch.cuda.is_available():
+            neglogprobs_new = self.policy.pd.neglogp(acs.type(torch.cuda.LongTensor))
+        else:
         neglogprobs_new = self.policy.pd.neglogp(acs.type(torch.LongTensor))
         # Get the entropy of the current policy
         entropy = torch.mean(self.policy.pd.entropy())
